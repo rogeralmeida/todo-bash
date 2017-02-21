@@ -44,6 +44,41 @@ function add {
   writeBackToFile
 }
 
-add $@
+function printHelp {
+  cat << EndOfMessage
+    Usage:
+      todo -a|--add <task>
+EndOfMessage
+}
 
-exit 0
+function completeTask {
+  if [ -e .todo.txt ]
+  then
+    readTodoFile
+  fi
+  unset TODO_ITEMS[$1]
+  writeBackToFile
+}
+
+while [[ $# -gt 1 ]]
+do
+  key="$1"
+
+  case $key in
+      -a|--add)
+      shift # past argument
+      add $@
+      exit 0
+      ;;
+      -d|--done)
+      shift # past argument
+      completeTask $@
+      ;;
+      *)
+        printHelp        # unknown option
+      ;;
+  esac
+  shift # past argument or value
+done
+
+
